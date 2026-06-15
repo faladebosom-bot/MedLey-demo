@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedLey Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--red:#E31B1B;--reddark:#B81515;--redmuted:#FFF0F0;--white:#fff;--g50:#F9F9F9;--g100:#F2F2F2;--g200:#E5E5E5;--g400:#9A9A9A;--g600:#5A5A5A;--black:#111;--green:#12B76A;--orange:#F79009;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--g50);color:var(--black);min-height:100vh;}
+.syne{font-family:'Syne',sans-serif;}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;}
+#s-role{flex-direction:column;align-items:center;justify-content:center;background:var(--white);padding:40px 20px;}
+#s-form{flex-direction:column;align-items:center;justify-content:center;background:var(--white);padding:40px 20px;}
+#s-app{flex-direction:row;height:100vh;overflow:hidden;}
+
+/* LOGO */
+.logotext{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--red);}
+.tagline{font-size:13px;color:var(--g600);margin-top:6px;margin-bottom:44px;}
+
+/* ROLE CARDS */
+.role-grid{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;max-width:760px;}
+.rcard{background:var(--white);border:2px solid var(--g200);border-radius:16px;padding:30px 26px;width:210px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.rcard:hover{border-color:var(--red);transform:translateY(-4px);box-shadow:0 12px 28px rgba(227,27,27,0.12);}
+.ricon{width:54px;height:54px;border-radius:14px;background:var(--redmuted);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;}
+.rname{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:5px;}
+.rdesc{font-size:12px;color:var(--g600);line-height:1.5;}
+
+/* FORM BOX */
+.formbox{background:var(--white);border:1.5px solid var(--g200);border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:0 4px 20px rgba(0,0,0,0.06);}
+.rolebadge{display:inline-block;background:var(--redmuted);color:var(--red);font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:18px;}
+.ftitle{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;margin-bottom:5px;}
+.fsub{font-size:13px;color:var(--g600);margin-bottom:24px;line-height:1.5;}
+.fg{margin-bottom:14px;}
+.fl{font-size:11px;font-weight:600;color:var(--g600);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;}
+.fi{width:100%;padding:10px 13px;border:1.5px solid var(--g200);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--black);background:var(--g50);outline:none;transition:border-color 0.2s;}
+.fi:focus{border-color:var(--red);background:var(--white);}
+.fn{font-size:11px;color:var(--g400);margin-top:3px;line-height:1.4;}
+.btnprimary{width:100%;padding:13px;background:var(--red);color:var(--white);border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;}
+.btnprimary:hover{background:var(--reddark);}
+.backlink{font-size:13px;color:var(--g400);cursor:pointer;margin-top:14px;text-align:center;display:block;}
+.backlink:hover{color:var(--red);}
+
+/* APP LAYOUT */
+.sidebar{width:230px;background:var(--white);border-right:1.5px solid var(--g200);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.sbhead{padding:22px 18px 18px;border-bottom:1px solid var(--g100);}
+.sbrole{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--g400);margin-top:8px;}
+.sbnav{padding:14px 10px;flex:1;}
+.navlabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g400);padding:0 8px;margin-bottom:5px;margin-top:14px;}
+.navitem{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--g600);transition:all 0.15s;margin-bottom:2px;}
+.navitem:hover{background:var(--g50);color:var(--black);}
+.navitem.active{background:var(--redmuted);color:var(--red);font-weight:600;}
+.sbfoot{padding:14px 10px;border-top:1px solid var(--g100);}
+.uchip{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:10px;background:var(--g50);}
+.uav{width:30px;height:30px;border-radius:50%;background:var(--red);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.uname{font-size:13px;font-weight:600;}
+.uemail{font-size:11px;color:var(--g400);}
+.logoutbtn{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--g400);margin-top:3px;}
+.logoutbtn:hover{color:var(--red);background:var(--redmuted);}
+.maincontent{flex:1;overflow-y:auto;background:var(--g50);}
+.mainheader{background:var(--white);border-bottom:1.5px solid var(--g200);padding:15px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.mhtitle{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;}
+.mhmeta{font-size:12px;color:var(--g400);}
+.pagecontent{padding:26px;}
+
+/* COMPONENTS */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.statcard{background:var(--white);border:1.5px solid var(--g200);border-radius:13px;padding:18px;}
+.statcard.red{border-color:var(--red);background:var(--redmuted);}
+.statlabel{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--g400);margin-bottom:7px;}
+.statvalue{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--black);}
+.statcard.red .statvalue{color:var(--red);}
+.statsub{font-size:12px;color:var(--g400);margin-top:3px;}
+.card{background:var(--white);border:1.5px solid var(--g200);border-radius:13px;overflow:hidden;margin-bottom:18px;}
+.cardhead{padding:14px 18px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between;}
+.cardtitle{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--g400);padding:11px 18px;text-align:left;background:var(--g50);}
+td{padding:12px 18px;font-size:13px;border-top:1px solid var(--g100);vertical-align:middle;}
+.qrow{cursor:pointer;}
+.qrow:hover td{background:var(--redmuted);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge.critical{background:#FEE4E2;color:#B42318;}
+.badge.moderate{background:#FEF0C7;color:#B54708;}
+.badge.stable{background:#D1FAE5;color:#065F46;}
+.badge.pending{background:#EFF8FF;color:#175CD3;}
+.badge.accepted{background:#D1FAE5;color:#065F46;}
+.badge.declined{background:#FEE4E2;color:#B42318;}
+.badge.ongoing{background:#FEF0C7;color:#B54708;}
+.badge.completed{background:#D1FAE5;color:#065F46;}
+
+/* BUTTONS */
+.btn{padding:7px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
+.btn.accept{background:#D1FAE5;color:#065F46;}
+.btn.accept:hover{background:#A7F3D0;}
+.btn.decline{background:#FEE4E2;color:#B42318;}
+.btn.decline:hover{background:#FECACA;}
+.btn.red{background:var(--red);color:white;}
+.btn.red:hover{background:var(--reddark);}
+.btn.outline{background:white;color:var(--g600);border:1.5px solid var(--g200);}
+.btn.outline:hover{border-color:var(--red);color:var(--red);}
+
+/* TOGGLE */
+.togwrap{display:flex;align-items:center;gap:9px;}
+.toglabel{font-size:13px;font-weight:500;color:var(--g600);}
+.tog{position:relative;width:42px;height:22px;background:var(--g200);border-radius:11px;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.tog.on{background:var(--red);}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:white;border-radius:50%;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.tog.on::after{left:23px;}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.overlaybox{background:white;border-radius:18px;width:100%;max-width:640px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.overlayhead{padding:22px 26px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:2;}
+.overlaybody{padding:22px 26px;}
+.dsection{margin-bottom:22px;}
+.dseclabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--g400);margin-bottom:10px;}
+.rxitem{background:var(--g50);border:1px solid var(--g200);border-radius:9px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.rxname{font-size:14px;font-weight:600;}
+.rxdose{font-size:12px;color:var(--g400);margin-top:2px;}
+.closebtn{background:none;border:none;cursor:pointer;font-size:20px;color:var(--g400);line-height:1;}
+.closebtn:hover{color:var(--black);}
+
+/* VOICE */
+.voicearea{background:var(--g50);border:1.5px solid var(--g200);border-radius:11px;padding:14px;margin-top:10px;}
+.voicebar{display:flex;align-items:center;gap:11px;margin-bottom:10px;}
+.micbtn{width:38px;height:38px;border-radius:50%;background:var(--red);border:none;cursor:pointer;font-size:17px;color:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.micbtn.rec{background:var(--reddark);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 5px rgba(227,27,27,0.2);}50%{box-shadow:0 0 0 11px rgba(227,27,27,0.07);}}
+.reclabel{font-size:12px;color:var(--red);font-weight:600;display:none;}
+.reclabel.show{display:block;}
+.notestxt{width:100%;min-height:75px;border:1.5px solid var(--g200);border-radius:9px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--black);resize:vertical;outline:none;background:white;}
+.notestxt:focus{border-color:var(--red);}
+
+/* ADD PATIENT */
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.codebox{background:var(--redmuted);border:1.5px dashed var(--red);border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+.codelabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--red);margin-bottom:3px;}
+.codevalue{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--red);letter-spacing:2px;}
+.existalert{background:#FEF0C7;border:1px solid #F79009;border-radius:9px;padding:11px 14px;font-size:13px;color:#B54708;font-weight:500;margin-top:10px;display:none;}
+
+/* TRIAGE RANK */
+.trank{width:24px;height:24px;border-radius:50%;background:var(--red);color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.trank.m{background:var(--orange);}
+.trank.s{background:var(--green);}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--g200);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- ROLE SELECTION -->
+<div id="s-role" class="screen active">
+  <svg viewBox="0 0 190 56" width="190" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:2px;">
+    <polyline points="6,22 17,9 28,22 39,9 50,22 61,9 72,22 83,9 91,14" stroke="#E31B1B" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+    <line x1="91" y1="14" x2="103" y2="4" stroke="#E31B1B" stroke-width="2.6" stroke-linecap="round"/>
+    <polyline points="96,4 103,4 103,11" stroke="#E31B1B" stroke-width="2.6" stroke-linejoin="round" fill="none"/>
+    <text x="6" y="50" font-family="Syne,sans-serif" font-weight="800" font-size="22" fill="#E31B1B">MedLey</text>
+  </svg>
+  <p class="tagline">Healthcare shouldn't stop when the internet does.</p>
+  <h2 class="syne" style="font-size:26px;font-weight:700;margin-bottom:7px;text-align:center;">Who are you logging in as?</h2>
+  <p style="font-size:14px;color:var(--g600);margin-bottom:36px;text-align:center;">Select your role to enter the demo</p>
+  <div class="role-grid">
+    <div class="rcard" onclick="pickRole('hospital')">
+      <div class="ricon">🏥</div>
+      <div class="rname">Hospital Admin</div>
+      <div class="rdesc">Manage staff registrations, oversee clinic activity</div>
+    </div>
+    <div class="rcard" onclick="pickRole('doctor')">
+      <div class="ricon">🩺</div>
+      <div class="rname">Doctor</div>
+      <div class="rdesc">View patient queue, access records, prescribe</div>
+    </div>
+    <div class="rcard" onclick="pickRole('nurse')">
+      <div class="ricon">💊</div>
+      <div class="rname">Nurse</div>
+      <div class="rdesc">Register patients, log complaints, assign to doctor</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN FORM -->
+<div id="s-form" class="screen">
+  <div class="formbox">
+    <div class="logotext" style="margin-bottom:20px;">MedLey</div>
+    <div class="rolebadge" id="f-badge">🏥 Hospital Admin</div>
+    <div class="ftitle" id="f-title">Register your Hospital</div>
+    <div class="fsub" id="f-sub">Enter your details. MedLey verifies your facility before granting access.</div>
+
+    <div id="f-hospital">
+      <div class="fg"><label class="fl">Hospital Name</label><input class="fi" type="text" placeholder="e.g. Lagos General Hospital"></div>
+      <div class="fg"><label class="fl">Admin Email</label><input class="fi" type="email" placeholder="admin@hospital.org"></div>
+      <div class="fg"><label class="fl">Phone Number</label><input class="fi" type="tel" placeholder="+234 800 000 0000"></div>
+      <div class="fg"><label class="fl">Access Code</label><input class="fi" type="text" placeholder="Enter placeholder code"><p class="fn">In the live version, MedLey verifies each hospital before granting access.</p></div>
+    </div>
+    <div id="f-doctor" style="display:none;">
+      <div class="fg"><label class="fl">Full Name</label><input class="fi" type="text" placeholder="Dr. Amara Osei"></div>
+      <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" placeholder="doctor@hospital.org"><p class="fn">Your request is sent to your hospital admin for approval.</p></div>
+      <div class="fg"><label class="fl">Specialty</label><input class="fi" type="text" placeholder="e.g. General Practitioner"></div>
+      <div class="fg"><label class="fl">Access Code</label><input class="fi" type="text" placeholder="Enter placeholder code"><p class="fn">Issued by hospital admin after approval in the live version.</p></div>
+    </div>
+    <div id="f-nurse" style="display:none;">
+      <div class="fg"><label class="fl">Full Name</label><input class="fi" type="text" placeholder="Nurse Fatima Bello"></div>
+      <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" placeholder="nurse@hospital.org"><p class="fn">Your request is sent to your hospital admin for approval.</p></div>
+      <div class="fg"><label class="fl">Access Code</label><input class="fi" type="text" placeholder="Enter placeholder code"><p class="fn">Issued by hospital admin after approval in the live version.</p></div>
+    </div>
+
+    <button class="btnprimary" onclick="enterApp()">Enter Dashboard</button>
+    <span class="backlink" onclick="goBack()">Back to role selection</span>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="s-app" class="screen">
+  <aside class="sidebar">
+    <div class="sbhead">
+      <div class="logotext">MedLey</div>
+      <div class="sbrole" id="sb-role">Hospital Admin</div>
+    </div>
+    <nav class="sbnav" id="sb-nav"></nav>
+    <div class="sbfoot">
+      <div class="uchip">
+        <div class="uav" id="u-av">H</div>
+        <div>
+          <div class="uname" id="u-name">Admin</div>
+          <div class="uemail">Lagos General Hospital</div>
+        </div>
+      </div>
+      <div class="logoutbtn" onclick="logout()">&#8592; Log out</div>
+    </div>
+  </aside>
+  <main class="maincontent">
+    <div class="mainheader">
+      <div>
+        <div class="mhtitle" id="mh-title">Dashboard</div>
+        <div class="mhmeta">Sunday, 11 May 2025 &middot; Lagos General Hospital</div>
+      </div>
+    </div>
+    <div class="pagecontent" id="page"></div>
+  </main>
+</div>
+
+<!-- PATIENT OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="overlaybox">
+    <div class="overlayhead">
+      <div>
+        <div class="syne" style="font-size:17px;font-weight:700;" id="ov-name"></div>
+        <div style="font-size:12px;color:var(--g400);margin-top:2px;" id="ov-meta"></div>
+      </div>
+      <button class="closebtn" onclick="closeOverlay()">&#10005;</button>
+    </div>
+    <div class="overlaybody" id="ov-body"></div>
+  </div>
+</div>
+
+<script>
+var role = '';
+var aiOn = true;
+var voiceOn = false;
+var recording = false;
+
+var PX = [
+  {id:1,code:'MLY-00481',name:'Amara Osei',age:62,gender:'F',bp:'162/98',complaint:'Severe chest tightness, shortness of breath',triage:'critical',wait:5,
+   hist:[{date:'12 Jan 2025',dx:'Hypertensive crisis',dr:'Dr. Nwosu'},{date:'03 Oct 2024',dx:'Hypertension Stage II',dr:'Dr. Nwosu'}],
+   rx:[{drug:'Amlodipine 10mg',dose:'Once daily',dur:'Ongoing',st:'ongoing'},{drug:'Lisinopril 5mg',dose:'Once daily',dur:'6 months',st:'ongoing'},{drug:'Aspirin 75mg',dose:'Once daily',dur:'3 months',st:'completed'}]},
+  {id:2,code:'MLY-00512',name:'Chukwuemeka Adeyemi',age:45,gender:'M',bp:'138/88',complaint:'Persistent lower back pain, difficulty walking',triage:'moderate',wait:18,
+   hist:[{date:'20 Feb 2025',dx:'Lumbar strain',dr:'Dr. Nwosu'}],
+   rx:[{drug:'Ibuprofen 400mg',dose:'Twice daily with food',dur:'2 weeks',st:'ongoing'},{drug:'Diclofenac Gel',dose:'Apply 3x daily',dur:'2 weeks',st:'ongoing'}]},
+  {id:3,code:'MLY-00490',name:'Fatima Bello',age:29,gender:'F',bp:'118/76',complaint:'Mild fever, sore throat for 3 days',triage:'stable',wait:35,hist:[],rx:[]},
+  {id:4,code:'MLY-00533',name:'Kwame Mensah',age:37,gender:'M',bp:'124/80',complaint:'Recurring headaches, blurry vision',triage:'moderate',wait:42,
+   hist:[{date:'10 Apr 2025',dx:'Migraine',dr:'Dr. Nwosu'}],
+   rx:[{drug:'Sumatriptan 50mg',dose:'As needed at onset',dur:'3 months',st:'ongoing'}]},
+  {id:5,code:'MLY-00477',name:'Ngozi Eze',age:54,gender:'F',bp:'128/84',complaint:'Routine check-up, diabetes management',triage:'stable',wait:55,
+   hist:[{date:'15 Mar 2025',dx:'Type 2 Diabetes',dr:'Dr. Nwosu'},{date:'10 Dec 2024',dx:'Type 2 Diabetes',dr:'Dr. Nwosu'}],
+   rx:[{drug:'Metformin 500mg',dose:'Twice daily with meals',dur:'Ongoing',st:'ongoing'},{drug:'Glibenclamide 5mg',dose:'Once daily before breakfast',dur:'Ongoing',st:'ongoing'}]}
+];
+
+var STAFF = [
+  {id:1,name:'Dr. Sola Akins',email:'sola.akins@email.com',role:'General Practitioner',type:'Doctor',status:'pending',time:'09:14 AM'},
+  {id:2,name:'Nurse Chisom Uba',email:'chisom.uba@email.com',role:'Ward Nurse',type:'Nurse',status:'pending',time:'09:31 AM'},
+  {id:3,name:'Dr. Bashir Musa',email:'b.musa@email.com',role:'Ophthalmologist',type:'Doctor',status:'accepted',time:'Yesterday'},
+  {id:4,name:'Nurse Adaeze Okoro',email:'a.okoro@email.com',role:'ICU Nurse',type:'Nurse',status:'declined',time:'Yesterday'}
+];
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+}
+
+function pickRole(r){
+  role = r;
+  var badges = {hospital:'Hospital Admin',doctor:'Doctor',nurse:'Nurse'};
+  var icons = {hospital:'🏥',doctor:'🩺',nurse:'💊'};
+  var titles = {hospital:'Register your Hospital',doctor:'Sign in as Doctor',nurse:'Sign in as Nurse'};
+  var subs = {
+    hospital:'Enter hospital details. MedLey verifies your facility before granting full access.',
+    doctor:'Enter your details. Your hospital admin will receive a request to approve your registration.',
+    nurse:'Enter your details. Your hospital admin will receive a request to approve your registration.'
+  };
+  document.getElementById('f-badge').textContent = icons[r] + ' ' + badges[r];
+  document.getElementById('f-title').textContent = titles[r];
+  document.getElementById('f-sub').textContent = subs[r];
+  document.getElementById('f-hospital').style.display = r === 'hospital' ? 'block' : 'none';
+  document.getElementById('f-doctor').style.display = r === 'doctor' ? 'block' : 'none';
+  document.getElementById('f-nurse').style.display = r === 'nurse' ? 'block' : 'none';
+  show('s-form');
+}
+
+function goBack(){show('s-role');}
+
+function enterApp(){
+  buildSidebar();
+  show('s-app');
+  loadPage('overview');
+}
+
+function logout(){
+  role = '';
+  show('s-role');
+}
+
+function buildSidebar(){
+  var labels = {hospital:'Hospital Admin',doctor:'Doctor',nurse:'Nurse'};
+  var names = {hospital:'Admin',doctor:'Dr. Emeka Nwosu',nurse:'Nurse Fatima'};
+  document.getElementById('sb-role').textContent = labels[role];
+  document.getElementById('u-av').textContent = names[role][0];
+  document.getElementById('u-name').textContent = names[role];
+
+  var navMap = {
+    hospital:[{icon:'📊',label:'Overview',key:'overview'},{icon:'👤',label:'Staff Requests',key:'staff'},{icon:'🏥',label:'Registered Staff',key:'registered'}],
+    doctor:[{icon:'📊',label:'Overview',key:'overview'},{icon:'🗂️',label:'Patient Queue',key:'queue'}],
+    nurse:[{icon:'📊',label:'Overview',key:'overview'},{icon:'➕',label:'Add Patient',key:'add_patient'},{icon:'📋',label:"Today's Patients",key:'todays'}]
+  };
+  var nav = document.getElementById('sb-nav');
+  nav.innerHTML = '<div class="navlabel">Menu</div>';
+  navMap[role].forEach(function(item){
+    var el = document.createElement('div');
+    el.className = 'navitem';
+    el.setAttribute('data-key', item.key);
+    el.innerHTML = '<span style="font-size:15px;width:18px;text-align:center;">' + item.icon + '</span>' + item.label;
+    el.onclick = function(){ loadPage(item.key); };
+    nav.appendChild(el);
+  });
+}
+
+function setActive(key){
+  document.querySelectorAll('.navitem').forEach(function(el){
+    el.classList.toggle('active', el.getAttribute('data-key') === key);
+  });
+}
+
+function loadPage(key){
+  setActive(key);
+  var titles = {overview:'Overview',queue:'Patient Queue',staff:'Staff Requests',registered:'Registered Staff',add_patient:'Add New Patient',todays:"Today's Patients"};
+  document.getElementById('mh-title').textContent = titles[key] || key;
+  var fns = {overview:pgOverview,queue:pgQueue,staff:pgStaff,registered:pgRegistered,add_patient:pgAddPatient,todays:pgTodays};
+  if(fns[key]) fns[key]();
+}
+
+function pg(html){ document.getElementById('page').innerHTML = html; }
+
+function pgOverview(){
+  if(role === 'hospital'){
+    pg('<div class="statgrid">' +
+      '<div class="statcard red"><div class="statlabel">Pending Requests</div><div class="statvalue">2</div><div class="statsub">Doctors and Nurses</div></div>' +
+      '<div class="statcard"><div class="statlabel">Registered Doctors</div><div class="statvalue">7</div><div class="statsub">Active today: 4</div></div>' +
+      '<div class="statcard"><div class="statlabel">Registered Nurses</div><div class="statvalue">12</div><div class="statsub">Active today: 8</div></div>' +
+      '<div class="statcard"><div class="statlabel">Patients Seen Today</div><div class="statvalue">38</div><div class="statsub">Up 12% from yesterday</div></div>' +
+      '</div>' +
+      '<div class="card"><div class="cardhead"><div class="cardtitle">Recent Activity</div></div>' +
+      '<table><thead><tr><th>Time</th><th>Event</th><th>Details</th></tr></thead><tbody>' +
+      '<tr><td>09:31 AM</td><td>Nurse registration request</td><td>Nurse Chisom Uba</td></tr>' +
+      '<tr><td>09:14 AM</td><td>Doctor registration request</td><td>Dr. Sola Akins</td></tr>' +
+      '<tr><td>08:50 AM</td><td>Patient assigned</td><td>Amara Osei to Dr. Nwosu</td></tr>' +
+      '<tr><td>08:42 AM</td><td>Patient added</td><td>MLY-00533 created</td></tr>' +
+      '<tr><td>08:31 AM</td><td>Shift started</td><td>4 doctors clocked in</td></tr>' +
+      '</tbody></table></div>');
+  } else if(role === 'doctor'){
+    pg('<div class="statgrid">' +
+      '<div class="statcard red"><div class="statlabel">Critical Patients</div><div class="statvalue">1</div><div class="statsub">Needs immediate attention</div></div>' +
+      '<div class="statcard"><div class="statlabel">In Queue</div><div class="statvalue">5</div><div class="statsub">Est. finish: 12:40 PM</div></div>' +
+      '<div class="statcard"><div class="statlabel">Seen Today</div><div class="statvalue">6</div><div class="statsub">Avg. 14 mins each</div></div>' +
+      '<div class="statcard"><div class="statlabel">AI Triage</div><div style="margin-top:10px;"><div class="togwrap"><div class="tog ' + (aiOn ? 'on' : '') + '" id="ov-tog" onclick="togTriage()"></div><span class="toglabel">' + (aiOn ? 'Active' : 'Off') + '</span></div></div></div>' +
+      '</div>' +
+      '<div style="background:var(--redmuted);border:1px solid var(--red);border-radius:11px;padding:13px 16px;margin-bottom:18px;font-size:13px;color:var(--red);display:flex;align-items:center;gap:9px;">' +
+      '<span style="font-size:17px;">🤖</span><span><strong>AI Triage is active.</strong> Patients ranked critical to stable. Toggle off anytime — you have full control.</span></div>' +
+      '<div class="card"><div class="cardhead"><div class="cardtitle">Queue Preview</div><button class="btn red" onclick="loadPage(\'queue\')">Full Queue</button></div>' +
+      '<table><thead><tr><th>Rank</th><th>Patient</th><th>Complaint</th><th>Triage</th><th>Wait</th></tr></thead><tbody>' +
+      queueRows(PX.slice(0,3)) +
+      '</tbody></table></div>');
+  } else {
+    pg('<div class="statgrid">' +
+      '<div class="statcard"><div class="statlabel">Patients Logged Today</div><div class="statvalue">12</div><div class="statsub">By you this shift</div></div>' +
+      '<div class="statcard red"><div class="statlabel">Awaiting Assignment</div><div class="statvalue">2</div><div class="statsub">Needs a doctor</div></div>' +
+      '<div class="statcard"><div class="statlabel">Doctors On Duty</div><div class="statvalue">4</div><div class="statsub">Available now: 2</div></div>' +
+      '</div>' +
+      '<div class="card"><div class="cardhead"><div class="cardtitle">Quick Actions</div></div>' +
+      '<div style="padding:18px;display:flex;gap:11px;flex-wrap:wrap;">' +
+      '<button class="btn red" onclick="loadPage(\'add_patient\')" style="padding:11px 18px;font-size:14px;">Add New Patient</button>' +
+      '<button class="btn outline" onclick="loadPage(\'todays\')" style="padding:11px 18px;font-size:14px;">View Today\'s Patients</button>' +
+      '</div></div>');
+  }
+}
+
+function queueRows(list){
+  var sorted = aiOn ? list.slice().sort(function(a,b){var o={critical:0,moderate:1,stable:2};return o[a.triage]-o[b.triage];}) : list.slice();
+  var html = '';
+  sorted.forEach(function(p, i){
+    var rc = p.triage === 'critical' ? '' : p.triage === 'moderate' ? ' m' : ' s';
+    html += '<tr class="qrow" onclick="openPatient(' + p.id + ')">' +
+      '<td><div class="trank' + rc + '">' + (i+1) + '</div></td>' +
+      '<td><strong>' + p.name + '</strong><br><span style="font-size:11px;color:var(--g400);">' + p.code + '</span></td>' +
+      '<td style="max-width:170px;">' + p.complaint + '</td>' +
+      '<td><span class="badge ' + p.triage + '">' + p.triage + '</span></td>' +
+      '<td>' + p.wait + ' min</td></tr>';
+  });
+  return html;
+}
+
+function pgQueue(){
+  var sorted = aiOn ? PX.slice().sort(function(a,b){var o={critical:0,moderate:1,stable:2};return o[a.triage]-o[b.triage];}) : PX.slice();
+  var rows = '';
+  sorted.forEach(function(p,i){
+    var rc = p.triage === 'critical' ? '' : p.triage === 'moderate' ? ' m' : ' s';
+    rows += '<tr class="qrow" onclick="openPatient(' + p.id + ')">' +
+      '<td><div class="trank' + rc + '">' + (i+1) + '</div></td>' +
+      '<td><strong>' + p.name + '</strong><br><span style="font-size:11px;color:var(--g400);">' + p.code + '</span></td>' +
+      '<td>' + p.age + '</td><td>' + p.bp + '</td>' +
+      '<td style="max-width:160px;">' + p.complaint + '</td>' +
+      '<td><span class="badge ' + p.triage + '">' + p.triage + '</span></td>' +
+      '<td>' + p.wait + ' min</td>' +
+      '<td><button class="btn red" onclick="event.stopPropagation();openPatient(' + p.id + ')">Open</button></td></tr>';
+  });
+  pg('<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">' +
+    '<div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;">' +
+    '<span style="background:linear-gradient(135deg,#FF3B3B,#B81515);color:white;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;">AI Triage</span>' +
+    '<div class="togwrap"><div class="tog ' + (aiOn ? 'on' : '') + '" id="q-tog" onclick="togTriage()"></div>' +
+    '<span class="toglabel">' + (aiOn ? 'Ranking by severity' : 'Manual order') + '</span></div></div>' +
+    '<span style="font-size:13px;color:var(--g400);">Est. finish: <strong>12:40 PM</strong></span></div>' +
+    '<div class="card"><div class="cardhead"><div class="cardtitle">Patient Queue (' + PX.length + ')</div></div>' +
+    '<table><thead><tr><th>Rank</th><th>Patient</th><th>Age</th><th>BP</th><th>Complaint</th><th>Triage</th><th>Wait</th><th></th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>');
+}
+
+function pgStaff(){
+  var rows = '';
+  STAFF.forEach(function(s){
+    var actions = s.status === 'pending'
+      ? '<button class="btn accept" onclick="doStaff(' + s.id + ',\'accepted\')">Accept</button> <button class="btn decline" onclick="doStaff(' + s.id + ',\'declined\')">Decline</button>'
+      : '&#8212;';
+    rows += '<tr id="sr-' + s.id + '"><td><strong>' + s.name + '</strong></td><td>' + s.type + '</td><td>' + s.role + '</td><td style="font-size:12px;color:var(--g400);">' + s.email + '</td><td>' + s.time + '</td>' +
+      '<td><span class="badge ' + s.status + '" id="sb-' + s.id + '">' + s.status + '</span></td>' +
+      '<td id="sa-' + s.id + '">' + actions + '</td></tr>';
+  });
+  pg('<div class="card"><div class="cardhead"><div class="cardtitle">Staff Registration Requests</div></div>' +
+    '<table><thead><tr><th>Name</th><th>Type</th><th>Role</th><th>Email</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>');
+}
+
+function doStaff(id, action){
+  STAFF.forEach(function(s){ if(s.id === id) s.status = action; });
+  var badge = document.getElementById('sb-' + id);
+  var actCell = document.getElementById('sa-' + id);
+  if(badge){ badge.className = 'badge ' + action; badge.textContent = action; }
+  if(actCell){ actCell.innerHTML = '&#8212;'; }
+}
+
+function pgRegistered(){
+  pg('<div class="card"><div class="cardhead"><div class="cardtitle">Registered Staff</div></div>' +
+    '<table><thead><tr><th>Name</th><th>Type</th><th>Specialty</th><th>Status</th></tr></thead><tbody>' +
+    '<tr><td><strong>Dr. Emeka Nwosu</strong></td><td>Doctor</td><td>General Practice</td><td><span class="badge accepted">Active</span></td></tr>' +
+    '<tr><td><strong>Dr. Aisha Kamara</strong></td><td>Doctor</td><td>Paediatrics</td><td><span class="badge accepted">Active</span></td></tr>' +
+    '<tr><td><strong>Dr. Bashir Musa</strong></td><td>Doctor</td><td>Ophthalmology</td><td><span class="badge accepted">Active</span></td></tr>' +
+    '<tr><td><strong>Nurse Fatima Bello</strong></td><td>Nurse</td><td>Ward Nurse</td><td><span class="badge accepted">Active</span></td></tr>' +
+    '<tr><td><strong>Nurse Kemi Adeyemi</strong></td><td>Nurse</td><td>ICU Nurse</td><td><span class="badge accepted">Active</span></td></tr>' +
+    '</tbody></table></div>');
+}
+
+function pgAddPatient(){
+  pg('<div class="card" style="max-width:600px;"><div class="cardhead"><div class="cardtitle">Register New Patient</div></div>' +
+    '<div style="padding:22px;">' +
+    '<div class="twocol">' +
+    '<div class="fg"><label class="fl">Full Name</label><input class="fi" type="text" placeholder="e.g. Kofi Mensah" id="np-name" oninput="chkExist()"></div>' +
+    '<div class="fg"><label class="fl">Age</label><input class="fi" type="number" placeholder="e.g. 34"></div>' +
+    '</div>' +
+    '<div class="twocol">' +
+    '<div class="fg"><label class="fl">Gender</label><select class="fi"><option>Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>' +
+    '<div class="fg"><label class="fl">Phone Number</label><input class="fi" type="tel" placeholder="+234 800 000 0000"></div>' +
+    '</div>' +
+    '<div class="fg"><label class="fl">Blood Pressure</label><input class="fi" type="text" placeholder="e.g. 128/84 mmHg"></div>' +
+    '<div class="fg"><label class="fl">Chief Complaint / Symptoms</label><textarea class="notestxt" placeholder="Describe the patient\'s symptoms..." style="min-height:90px;"></textarea></div>' +
+    '<div class="fg"><label class="fl">Assign to Doctor</label><select class="fi"><option>Dr. Emeka Nwosu (General Practice)</option><option>Dr. Aisha Kamara (Paediatrics)</option><option>Dr. Bashir Musa (Ophthalmology)</option></select></div>' +
+    '<div class="existalert" id="ex-alert">A patient with a similar name already exists (MLY-00481 — Amara Osei). Confirm this is a new patient before proceeding.</div>' +
+    '<button class="btn red" style="padding:12px 20px;font-size:14px;border-radius:10px;width:100%;margin-top:12px;" onclick="submitPx()">Add Patient and Assign</button>' +
+    '</div></div>' +
+    '<div id="px-confirm" style="display:none;max-width:600px;margin-top:16px;">' +
+    '<div class="card"><div class="cardhead"><div class="cardtitle">Patient Added Successfully</div></div>' +
+    '<div style="padding:18px;">' +
+    '<div class="codebox"><div><div class="codelabel">MedLey Patient Code</div><div class="codevalue" id="new-code">MLY-00601</div></div><span style="font-size:20px;">🔖</span></div>' +
+    '<p style="font-size:13px;color:var(--g600);margin-top:12px;line-height:1.6;">This code is permanently linked to this patient. It auto-retrieves their full history on any future visit — no paper card needed.</p>' +
+    '<div style="margin-top:14px;padding:13px;background:var(--g50);border-radius:9px;font-size:13px;color:var(--g600);">' +
+    '<strong>Assigned to:</strong> Dr. Emeka Nwosu<br><strong>Queue position:</strong> #6<br><strong>Estimated wait:</strong> 58 minutes</div>' +
+    '</div></div></div>');
+}
+
+function chkExist(){
+  var v = document.getElementById('np-name');
+  var al = document.getElementById('ex-alert');
+  if(v && al) al.style.display = v.value.toLowerCase().indexOf('am') > -1 ? 'block' : 'none';
+}
+
+function submitPx(){
+  var v = document.getElementById('np-name');
+  if(!v || !v.value.trim()){ alert('Please enter a patient name.'); return; }
+  var conf = document.getElementById('px-confirm');
+  var code = document.getElementById('new-code');
+  if(conf) conf.style.display = 'block';
+  if(code) code.textContent = 'MLY-0' + (Math.floor(Math.random() * 900) + 600);
+}
+
+function pgTodays(){
+  var rows = '';
+  PX.forEach(function(p){
+    rows += '<tr><td style="font-family:monospace;font-size:12px;color:var(--red);">' + p.code + '</td>' +
+      '<td><strong>' + p.name + '</strong>, ' + p.age + p.gender + '</td>' +
+      '<td>' + p.bp + '</td>' +
+      '<td style="max-width:170px;">' + p.complaint + '</td>' +
+      '<td>Dr. Emeka Nwosu</td>' +
+      '<td><span class="badge ' + p.triage + '">' + p.triage + '</span></td></tr>';
+  });
+  pg('<div class="card"><div class="cardhead"><div class="cardtitle">Today\'s Patients</div></div>' +
+    '<table><thead><tr><th>Code</th><th>Name</th><th>BP</th><th>Complaint</th><th>Assigned To</th><th>Triage</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>');
+}
+
+function openPatient(id){
+  var p = null;
+  PX.forEach(function(x){ if(x.id === id) p = x; });
+  if(!p) return;
+  document.getElementById('ov-name').textContent = p.name;
+  document.getElementById('ov-meta').textContent = p.code + ' · ' + p.age + ' yrs · ' + p.gender + ' · BP: ' + p.bp;
+
+  var histHtml = '';
+  if(p.hist.length > 0){
+    p.hist.forEach(function(h){
+      histHtml += '<div style="padding:10px 13px;background:var(--g50);border-radius:8px;margin-bottom:7px;border:1px solid var(--g200);">' +
+        '<div style="font-size:12px;color:var(--g400);margin-bottom:2px;">' + h.date + ' · ' + h.dr + '</div>' +
+        '<div style="font-size:14px;font-weight:600;">' + h.dx + '</div></div>';
+    });
+  } else {
+    histHtml = '<p style="font-size:13px;color:var(--g400);">No previous visits recorded.</p>';
+  }
+
+  var rxHtml = '';
+  if(p.rx.length > 0){
+    p.rx.forEach(function(r){
+      rxHtml += '<div class="rxitem"><div><div class="rxname">' + r.drug + '</div><div class="rxdose">' + r.dose + ' · ' + r.dur + '</div></div>' +
+        '<span class="badge ' + r.st + '">' + r.st + '</span></div>';
+    });
+  } else {
+    rxHtml = '<p style="font-size:13px;color:var(--g400);">No prescriptions yet.</p>';
+  }
+
+  var notesSection = '';
+  if(role === 'doctor'){
+    notesSection = '<div class="dsection">' +
+      '<div class="dseclabel" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;">' +
+      '<span>Add Consultation Notes</span>' +
+      '<div class="togwrap"><div class="tog ' + (voiceOn ? 'on' : '') + '" id="v-tog" onclick="togVoice()"></div>' +
+      '<span class="toglabel" id="v-label">' + (voiceOn ? 'Voice Mode' : 'Type Mode') + '</span></div></div>' +
+      '<div class="voicearea">' +
+      '<div class="voicebar" id="vbar" style="' + (voiceOn ? '' : 'display:none;') + '">' +
+      '<button class="micbtn" id="micbtn" onclick="togRec()">🎤</button>' +
+      '<div><div class="reclabel" id="reclbl">Recording...</div>' +
+      '<div style="font-size:12px;color:var(--g400);margin-top:2px;">In live version: WisprFlow transcribes speech into notes</div></div></div>' +
+      '<textarea class="notestxt" id="notes" placeholder="Type or dictate prescription and consultation notes..."></textarea>' +
+      '<button class="btn red" style="margin-top:9px;" onclick="saveNotes()">Save to Patient Record</button>' +
+      '</div></div>';
+  }
+
+  document.getElementById('ov-body').innerHTML =
+    '<div class="dsection"><div class="dseclabel">Current Complaint</div>' +
+    '<div style="background:var(--redmuted);border-radius:9px;padding:13px 15px;font-size:14px;font-weight:500;border-left:3px solid var(--red);">' + p.complaint + '</div></div>' +
+    '<div class="dsection"><div class="dseclabel">Visit History</div>' + histHtml + '</div>' +
+    '<div class="dsection"><div class="dseclabel">Prescriptions</div>' + rxHtml + '</div>' +
+    notesSection;
+
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeOverlay(){
+  document.getElementById('overlay').classList.remove('open');
+  recording = false;
+}
+
+function saveNotes(){
+  var n = document.getElementById('notes');
+  if(!n || !n.value.trim()){ alert('Please add notes before saving.'); return; }
+  alert('Notes saved to patient record.');
+  closeOverlay();
+}
+
+function togTriage(){
+  aiOn = !aiOn;
+  var key = '';
+  document.querySelectorAll('.navitem').forEach(function(el){
+    if(el.classList.contains('active')) key = el.getAttribute('data-key');
+  });
+  if(key) loadPage(key);
+}
+
+function togVoice(){
+  voiceOn = !voiceOn;
+  var tog = document.getElementById('v-tog');
+  var lbl = document.getElementById('v-label');
+  var bar = document.getElementById('vbar');
+  if(tog) tog.classList.toggle('on', voiceOn);
+  if(lbl) lbl.textContent = voiceOn ? 'Voice Mode' : 'Type Mode';
+  if(bar) bar.style.display = voiceOn ? 'flex' : 'none';
+}
+
+function togRec(){
+  recording = !recording;
+  var btn = document.getElementById('micbtn');
+  var lbl = document.getElementById('reclbl');
+  if(btn) btn.classList.toggle('rec', recording);
+  if(lbl) lbl.classList.toggle('show', recording);
+  if(!recording){
+    var field = document.getElementById('notes');
+    if(field){
+      var spacer = field.value.length > 0 ? ' ' : '';
+      field.value = field.value + spacer + '[WisprFlow transcription appears here in live version]';
+    }
+  }
+}
+</script>
+</body>
+</html>
